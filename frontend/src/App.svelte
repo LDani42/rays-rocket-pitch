@@ -2,8 +2,8 @@
     import { onMount } from 'svelte';
     import axios from 'axios';
 
-     // In your App.svelte file, add a constant at the top:
-     const API_URL = "https://rocket-pitch-backend.onrender.com";
+    // In your App.svelte file, add a constant at the top:
+    const API_URL = "https://rocket-pitch-backend.onrender.com";
 
     // Application state
     let pitchDeckFile = null;
