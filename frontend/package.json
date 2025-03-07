@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "scripts": {
       "dev": "vite --config vite.config.mjs",
-      "build": "vite build --config vite.config.mjs",
+      "build": "node ./node_modules/vite/bin/vite.js build --config vite.config.mjs",
       "preview": "vite preview --config vite.config.mjs"
     },
     "dependencies": {
