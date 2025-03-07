@@ -7,20 +7,21 @@ from dotenv import find_dotenv
 from openai import OpenAI  # Updated import
 
 # Find the .env file
-env_path = find_dotenv()
-# Read the API key directly from the .env file
-with open(env_path, 'r') as f:
-    env_content = f.read()
+try:
+    load_dotenv()
+    print("Loaded environment from .env file")
+except:
+    print("No .env file found, using system environment variables")
 
-# Extract the API key using regex
-api_key_match = re.search(r'OPENAI_API_KEY\s*=\s*([^\n]+)', env_content)
-if api_key_match:
-    api_key = api_key_match.group(1).strip('"\'')
-    # Use this API key explicitly:
-    client = OpenAI(api_key=api_key)
+# Get API key and print debug info (don't print the full key for security)
+api_key = os.environ.get("OPENAI_API_KEY")
+if api_key:
+    print(f"Found API key starting with: {api_key[:4]}...")
 else:
-    # Fall back to environment variable if .env parsing fails
-    client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    print("WARNING: OPENAI_API_KEY environment variable not set")
+
+# Create OpenAI client
+client = OpenAI(api_key=api_key)
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST"], "allow_headers": ["Content-Type", "Authorization"]}})
