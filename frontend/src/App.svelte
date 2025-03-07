@@ -1,7 +1,10 @@
 <script>
     import { onMount } from 'svelte';
     import axios from 'axios';
-    
+
+     // In your App.svelte file, add a constant at the top:
+     const API_URL = "https://rocket-pitch-backend.onrender.com";
+
     // Application state
     let pitchDeckFile = null;
     let mediaRecorder;
@@ -69,9 +72,6 @@
       console.log("App mounted, checking backend connection...");
       checkBackendConnection();
 
-      // In your App.svelte file, add a constant at the top:
-      const API_URL = "https://rocket-pitch-frontend.onrender.com/";
-
       // Add file drop event listeners
       const dropArea = document.getElementById('drop-area');
       if (dropArea) {
@@ -117,7 +117,7 @@
     
     async function checkBackendConnection() {
       try {
-        const response = await axios.get('API_URL/health');
+        const response = await axios.get('${API_URL}/health');
         console.log("Health check response:", response.data);
         if (response.data.status === 'ok') {
           apiStatus = "connected";
@@ -360,7 +360,7 @@ function formatMarkdown(text) {
 
         try {
             isLoading = true;
-            console.log("Submitting to backend at API_URL/upload");
+            console.log("Submitting to backend at ${API_URL}/upload");
             
             // Start simulated progress for better user experience
             uploadProgress = 0;
@@ -389,7 +389,7 @@ function formatMarkdown(text) {
             
             // First, do a health check to verify connectivity
             try {
-            const healthCheck = await axios.get('API_URL/health');
+            const healthCheck = await axios.get('${API_URL}/health');
             console.log("Pre-request health check:", healthCheck.data);
             uploadProgress = Math.max(uploadProgress, 15); // Ensure progress moves forward
             } catch (healthError) {
@@ -400,7 +400,7 @@ function formatMarkdown(text) {
             // Now try the actual upload with axios
             console.log("Sending main request with axios...");
             
-            const response = await axios.post('API_URL/upload', formData, {
+            const response = await axios.post('${API_URL}/upload', formData, {
             headers: { 
                 'Content-Type': 'multipart/form-data'
             },
@@ -448,7 +448,7 @@ function formatMarkdown(text) {
             console.log("Axios failed, trying with fetch...");
             errorMessage = "Having trouble with the upload. Trying an alternative method...";
             
-            const fetchResponse = await fetch('API_URL/upload', {
+            const fetchResponse = await fetch('${API_URL}/upload', {
                 method: 'POST',
                 body: formData
             });
