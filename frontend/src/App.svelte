@@ -1276,6 +1276,11 @@ ${parsedAnalysis.deliveryRecs.map(r => `- ${r}`).join('\n')}
         </div>
       {/if}
 
+      <!-- Submit to Gallery Tab -->
+      {#if currentTab === 'gallery-submit'}
+        <SubmitToGallery {analysisResult} {overallScore} />
+      {/if}
+
       <!-- Results Tab with enhanced card-based display -->
       {#if currentTab === 'results'}
         <div class="results-tab">
@@ -1296,7 +1301,17 @@ ${parsedAnalysis.deliveryRecs.map(r => `- ${r}`).join('\n')}
                 </button>
               </div>
             </div>
-            
+
+            <div class="results-footer">
+              <button class="back-button" on:click={() => setTab('upload')}>
+                ← Back to Upload
+              </button>
+              
+              <button class="gallery-button" on:click={() => setTab('gallery-submit')}>
+                Submit to Gallery
+              </button>
+            </div>
+
             <!-- Overall score card -->
             <div class="score-overview">
               <div class="score-card overall">
