@@ -1344,11 +1344,6 @@ ${parsedAnalysis.deliveryRecs.map(r => `- ${r}`).join('\n')}
                 Submit to Gallery
               </button>
             </div>
-              
-              <button class="gallery-button" on:click={() => setTab('gallery-submit')}>
-                Submit to Gallery
-              </button>
-            </div>
 
             <!-- Overall score card -->
             <div class="score-overview">
