@@ -1,4 +1,6 @@
 import App from './App.svelte';
+import Gallery from './components/Gallery.svelte';
+import PitchDetail from './components/PitchDetail.svelte';
 
 // For debugging
 console.log("Initializing Svelte app...");
@@ -12,6 +14,11 @@ if (!appElement) {
 const app = new App({
   target: appElement || document.body // Fallback to body if app element not found
 });
+
+const routes = [
+  { path: '/gallery', component: Gallery },
+  { path: '/gallery/:id', component: PitchDetail, props: route => ({ pitchId: route.params.id }) }
+];
 
 console.log("Svelte app initialized");
 
