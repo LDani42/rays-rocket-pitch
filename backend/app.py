@@ -1,5 +1,7 @@
 import os
 import re
+import uuid
+from datetime import datetime
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -25,6 +27,64 @@ client = OpenAI(api_key=api_key)
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*", "methods": ["GET", "POST"], "allow_headers": ["Content-Type", "Authorization"]}})
+
+# Create a simple in-memory database (replace with a real database later)
+pitch_gallery = []
+
+@app.route('/gallery', methods=['GET'])
+def get_gallery():
+    """Return all pitches in the gallery"""
+    return jsonify(pitch_gallery)
+
+@app.route('/gallery/submit', methods=['POST'])
+def submit_to_gallery():
+    """Submit a pitch to the gallery"""
+    data = request.json
+    
+    # Validate required fields
+    if not all(key in data for key in ['name', 'title', 'description', 'analysisId']):
+        return jsonify({'error': 'Missing required fields'}), 400
+    
+    # Create new gallery entry
+    pitch_entry = {
+        'id': str(uuid.uuid4()),
+        'name': data['name'],
+        'title': data['title'],
+        'description': data['description'],
+        'analysisId': data['analysisId'],
+        'analysisResult': data.get('analysisResult', {}),
+        'overallScore': data.get('overallScore', 0),
+        'dateSubmitted': datetime.now().isoformat(),
+        'comments': []
+    }
+    
+    pitch_gallery.append(pitch_entry)
+    return jsonify(pitch_entry), 201
+
+@app.route('/gallery/<pitch_id>/comment', methods=['POST'])
+def add_comment(pitch_id):
+    """Add a comment to a pitch"""
+    data = request.json
+    
+    # Validate comment data
+    if 'comment' not in data or 'author' not in data:
+        return jsonify({'error': 'Comment and author required'}), 400
+    
+    # Find the pitch
+    pitch = next((p for p in pitch_gallery if p['id'] == pitch_id), None)
+    if not pitch:
+        return jsonify({'error': 'Pitch not found'}), 404
+    
+    # Add the comment
+    comment = {
+        'id': str(uuid.uuid4()),
+        'author': data['author'],
+        'comment': data['comment'],
+        'timestamp': datetime.now().isoformat()
+    }
+    
+    pitch['comments'].append(comment)
+    return jsonify(comment), 201
 
 @app.route('/upload', methods=['POST'])
 def upload_files():
