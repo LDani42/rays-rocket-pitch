@@ -1,6 +1,21 @@
 <script>
     import { onMount } from 'svelte';
     import axios from 'axios';
+    import Gallery from './components/Gallery.svelte';
+    import PitchDetail from './components/PitchDetail.svelte';
+    import SubmitToGallery from './components/SubmitToGallery.svelte';
+
+    // Current route/page
+    let currentPage = 'main'; // 'main', 'gallery', 'pitch-detail', 'gallery-submit'
+    let currentPitchId = null;
+  
+    // Function to navigate to a page
+    function navigate(page, params = {}) {
+      currentPage = page;
+      if (params.pitchId) {
+        currentPitchId = params.pitchId;
+      }
+    }
 
     // In your App.svelte file, add a constant at the top:
     const API_URL = "https://rocket-pitch-backend.onrender.com";
@@ -1066,17 +1081,35 @@ ${parsedAnalysis.deliveryRecs.map(r => `- ${r}`).join('\n')}
         <h1>Ray's Rocket Pitch</h1>
       </div>
       
+      <nav class="main-nav">
+        <button class="nav-link" on:click={() => navigate('main')}>Home</button>
+        <button class="nav-link" on:click={() => navigate('gallery')}>Gallery</button>
+      </nav>
+      
       <div class="api-status">
-        {#if apiStatus === "checking"}
-          <span class="status-indicator checking"></span> Connecting...
-        {:else if apiStatus === "connected"}
-          <span class="status-indicator connected"></span> Server Connected
-        {:else}
-          <span class="status-indicator error"></span> Server Disconnected
-        {/if}
+        <!-- Status indicator... -->
       </div>
-    </header>
-  
+    </header>      
+
+      <!-- Page content based on current page -->
+    {#if currentPage === 'main'}
+      <div class="tabs">
+        <!-- Your existing tabs -->
+      </div>
+      
+      <!-- Your existing content... -->
+    {:else if currentPage === 'gallery'}
+      <Gallery on:viewPitch={(e) => navigate('pitch-detail', { pitchId: e.detail.id })} />
+    {:else if currentPage === 'pitch-detail'}
+      <PitchDetail pitchId={currentPitchId} on:back={() => navigate('gallery')} />
+    {:else if currentPage === 'gallery-submit'}
+      <SubmitToGallery 
+        analysisResult={analysisResult} 
+        overallScore={overallScore} 
+        on:success={() => navigate('gallery')} 
+        on:cancel={() => navigate('main')} 
+      />
+    {/if}
     <!-- Main content area -->
     <div class="app-content">
       <!-- Tab navigation -->
@@ -1306,6 +1339,11 @@ ${parsedAnalysis.deliveryRecs.map(r => `- ${r}`).join('\n')}
               <button class="back-button" on:click={() => setTab('upload')}>
                 ← Back to Upload
               </button>
+              
+              <button class="gallery-button" on:click={() => navigate('gallery-submit')}>
+                Submit to Gallery
+              </button>
+            </div>
               
               <button class="gallery-button" on:click={() => setTab('gallery-submit')}>
                 Submit to Gallery
@@ -2762,6 +2800,25 @@ ${parsedAnalysis.deliveryRecs.map(r => `- ${r}`).join('\n')}
 .recommendations li {
   margin-bottom: 12px;
   line-height: 1.5;
+}
+
+.main-nav {
+  display: flex;
+  gap: 15px;
+}
+
+.nav-link {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 16px;
+  cursor: pointer;
+  transition: color 0.2s;
+  padding: 5px 10px;
+}
+
+.nav-link:hover {
+  color: white;
 }
     }
   </style>
